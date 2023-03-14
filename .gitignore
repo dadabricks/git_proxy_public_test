@@ -1,0 +1,5 @@
+.idea
+databricks_repo_proxy.egg-info/
+**/__pycache__/
+dist
+.envrc
