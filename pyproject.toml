@@ -1,0 +1,11 @@
+[project]
+name = "databricks-repo-proxy"
+version = "0.0.12"
+dependencies = []
+
+[project.scripts]
+db_proxy = "proxy.main:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
