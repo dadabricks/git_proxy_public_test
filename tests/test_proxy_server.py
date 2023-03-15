@@ -13,6 +13,7 @@ def build_git_clone_commands(repo_url: str, username: str, token: str, path: str
         "Cache-Control",
         "Connection",
         "Content-Encoding",
+        "Content-Length",
         "Content-Type",
         "Pragma",
         "User-Agent",
@@ -46,7 +47,9 @@ def clone(provider: str, username: str, readonly_token: str, url: str):
         )
         cmd = [" ".join(commands)]
         print(cmd)
-        output = subprocess.run(cmd, shell=True, check=True, capture_output=True)
+        output = subprocess.run(
+            cmd, shell=True, check=True, capture_output=True, timeout=10
+        )
         print(output)
 
 
@@ -55,7 +58,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         clone(
             provider="Github",
             username="dadabricks",
-            readonly_token="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",
+            readonly_token="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",
             url=self.to_proxy_url(
                 "https://github.com/dadabricks/integration-small.git"
             ),
