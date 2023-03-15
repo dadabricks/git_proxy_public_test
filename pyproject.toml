@@ -1,6 +1,7 @@
 [project]
 name = "databricks-repo-proxy"
 version = "0.0.13"
+description = "A proxy for databricks repos"
 dependencies = []
 
 [project.scripts]
