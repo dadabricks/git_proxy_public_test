@@ -58,7 +58,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         clone(
             provider="Github",
             username="dadabricks",
-            readonly_token="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",
+            readonly_token="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",
             url=self.to_proxy_url(
                 "https://github.com/dadabricks/integration-small.git"
             ),
