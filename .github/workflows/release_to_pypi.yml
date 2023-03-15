@@ -1,4 +1,4 @@
-name: Publish Databricks Repo Proxy to PyPI / GitHub
+name: Publish Databricks Repo Proxy to PyPI and GitHub
 
 on:
   push:
@@ -6,8 +6,7 @@ on:
       - "v*"
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: write-all
 
 jobs:
   build-n-publish:
