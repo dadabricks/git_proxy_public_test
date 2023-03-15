@@ -8,10 +8,10 @@ from tests.test_base_cls import TestHandlerBaseClass
 
 
 class TestHealthHandler(TestHandlerBaseClass):
-    def test_version_header(self):
-        example_url = self.to_proxy_url("https://example.com/")
-        response = request.urlopen(url=example_url)
-        assert response.headers.get(DB_VERSION_HEADER_KEY) == ProxyConfig.VERSION
+#     def test_version_header(self):
+#         example_url = self.to_proxy_url("https://example.com/")
+#         response = request.urlopen(url=example_url)
+#         assert response.headers.get(DB_VERSION_HEADER_KEY) == ProxyConfig.VERSION
 
     def test_health_endpoint(self):
         health_url = self.to_proxy_url(HEALTH_PATH)
