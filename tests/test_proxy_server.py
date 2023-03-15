@@ -77,15 +77,15 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         )
 
     # TODO: Fix this test
-    # def test_clone_gitlab(self):
-    #     clone(
-    #         provider="Gitlab",
-    #         username="repos-databricks",
-    #         readonly_token="glpat-bjxsUQhzSt2YBcVXyGd-",
-    #         url=self.to_proxy_url(
-    #             "https://gitlab.com/repos-databricks/integration-small.git"
-    #         ),
-    #     )
+    def test_clone_gitlab(self):
+        clone(
+            provider="Gitlab",
+            username="repos-databricks",
+            readonly_token="glpat-bjxsUQhzSt2YBcVXyGd-",
+            url=self.to_proxy_url(
+                "https://gitlab.com/repos-databricks/integration-small.git"
+            ),
+        )
 
     def test_clone_bitbucket(self):
         clone(
