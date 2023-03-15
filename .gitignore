@@ -3,3 +3,4 @@ databricks_repo_proxy.egg-info/
 **/__pycache__/
 dist
 .envrc
+.pytest_cache
