@@ -5,20 +5,7 @@ from base64 import b64encode, b64decode
 from tests.test_base_cls import TestHandlerBaseClass
 
 
-def build_git_clone_commands(repo_url: str, username: str, token: str, path: str):
-    allowed_headers = [
-        "Accept",
-        "Accept-Encoding",
-        "Accept-Language",
-        "Cache-Control",
-        "Connection",
-        "Content-Encoding",
-        "Content-Length",
-        "Content-Type",
-        "Pragma",
-        "User-Agent",
-        "git-protocol",
-    ]
+def build_git_clone_commands(repo_url: str, username: str, token: str, path: str, allowed_headers: list):
     allowed_headers_config = f'''http.extraHeader="x-databricks-allowed-headers:{','.join(allowed_headers)}"'''
     basic_auth_token = b64encode(bytes(username + ":" + token, "ascii")).decode("ascii")
     forward_headers_config = f'http.extraHeader=x-databricks-forward-header-Authorization:"Basic {basic_auth_token}"'
@@ -36,7 +23,7 @@ def build_git_clone_commands(repo_url: str, username: str, token: str, path: str
     return commands
 
 
-def clone(provider: str, username: str, readonly_token: str, url: str):
+def clone(provider: str, username: str, readonly_token: str, url: str, allowed_headers: list):
     with tempfile.TemporaryDirectory() as temp_dir:
         print(f"Testing Provider: {provider}")
         commands = build_git_clone_commands(
@@ -44,6 +31,7 @@ def clone(provider: str, username: str, readonly_token: str, url: str):
             username=username,
             token=readonly_token,
             path=temp_dir,
+            allowed_headers=allowed_headers,
         )
         cmd = [" ".join(commands)]
         print(cmd)
@@ -64,6 +52,19 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://github.com/dadabricks/integration-small.git"
             ),
+            allowed_headers=[
+                "Accept",
+                "Accept-Encoding",
+                "Accept-Language",
+                "Cache-Control",
+                "Connection",
+                "Content-Encoding",
+                "Content-Length",
+                "Content-Type",
+                "Pragma",
+                "User-Agent",
+                "git-protocol",
+            ]
         )
 
     def test_clone_azure(self):
@@ -74,18 +75,44 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://repos-databricks@dev.azure.com/repos-databricks/repos/_git/integration-small"
             ),
+            allowed_headers=[
+                "Accept",
+                "Accept-Encoding",
+                "Accept-Language",
+                "Cache-Control",
+                "Connection",
+                "Content-Encoding",
+                "Content-Length",
+                "Content-Type",
+                "Pragma",
+                "User-Agent",
+                "git-protocol",
+            ]
         )
 
     # TODO: Fix this test
-    # def test_clone_gitlab(self):
-    #     clone(
-    #         provider="Gitlab",
-    #         username="repos-databricks",
-    #         readonly_token="glpat-bjxsUQhzSt2YBcVXyGd-",
-    #         url=self.to_proxy_url(
-    #             "https://gitlab.com/repos-databricks/integration-small.git"
-    #         ),
-    #     )
+    def test_clone_gitlab(self):
+        clone(
+            provider="Gitlab",
+            username="repos-databricks",
+            readonly_token="glpat-bjxsUQhzSt2YBcVXyGd-",
+            url=self.to_proxy_url(
+                "https://gitlab.com/repos-databricks/integration-small.git"
+            ),
+            # Gitlab will fail with Accept-Encoding header
+            allowed_headers=[
+                "Accept",
+                "Accept-Language",
+                "Cache-Control",
+                "Connection",
+                "Content-Encoding",
+                "Content-Length",
+                "Content-Type",
+                "Pragma",
+                "User-Agent",
+                "git-protocol",
+            ]
+        )
 
     def test_clone_bitbucket(self):
         clone(
@@ -95,4 +122,17 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://repos-databricks@bitbucket.org/dadabricks/integration-small.git"
             ),
+            allowed_headers=[
+                "Accept",
+                "Accept-Encoding",
+                "Accept-Language",
+                "Cache-Control",
+                "Connection",
+                "Content-Encoding",
+                "Content-Length",
+                "Content-Type",
+                "Pragma",
+                "User-Agent",
+                "git-protocol",
+            ]
         )
