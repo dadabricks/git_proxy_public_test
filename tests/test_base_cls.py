@@ -27,11 +27,18 @@ class TestHandlerBaseClass(unittest.TestCase):
             )
         else:
             cls.httpd = HTTPServer(SERVER_ADDRESS, ProxyRequestHandler)
-            cls.server_thread = Thread(target=cls.httpd.serve_forever)
+            cls.keep_alive = True
+
+            def server_while():
+                while cls.keep_alive:
+                    cls.httpd.handle_request()
+
+            cls.server_thread = Thread(target=server_while)
             cls.server_thread.daemon = True
             cls.server_thread.start()
 
     @classmethod
     def tearDownClass(cls) -> None:
+        cls.keep_alive = False
         if hasattr(cls, "httpd"):
-            cls.httpd.shutdown()
+            cls.httpd.server_close()

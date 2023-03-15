@@ -55,7 +55,7 @@ def copy_header_proxy_for_destination(headers):
     new_headers = {}
     for header_key in headers.keys():
         if header_key.lower().startswith(DB_FORWARD_HEADER_PREFIX):
-            new_header_key = header_key[len(DB_FORWARD_HEADER_PREFIX):]
+            new_header_key = header_key[len(DB_FORWARD_HEADER_PREFIX) :]
             if len(new_header_key):
                 new_headers[new_header_key] = headers[header_key]
 
