@@ -5,7 +5,9 @@ from base64 import b64encode, b64decode
 from tests.test_base_cls import TestHandlerBaseClass
 
 
-def build_git_clone_commands(repo_url: str, username: str, token: str, path: str, allowed_headers: list):
+def build_git_clone_commands(
+    repo_url: str, username: str, token: str, path: str, allowed_headers: list
+):
     allowed_headers_config = f'''http.extraHeader="x-databricks-allowed-headers:{','.join(allowed_headers)}"'''
     basic_auth_token = b64encode(bytes(username + ":" + token, "ascii")).decode("ascii")
     forward_headers_config = f'http.extraHeader=x-databricks-forward-header-Authorization:"Basic {basic_auth_token}"'
@@ -23,7 +25,9 @@ def build_git_clone_commands(repo_url: str, username: str, token: str, path: str
     return commands
 
 
-def clone(provider: str, username: str, readonly_token: str, url: str, allowed_headers: list):
+def clone(
+    provider: str, username: str, readonly_token: str, url: str, allowed_headers: list
+):
     with tempfile.TemporaryDirectory() as temp_dir:
         print(f"Testing Provider: {provider}")
         commands = build_git_clone_commands(
@@ -64,7 +68,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
                 "Pragma",
                 "User-Agent",
                 "git-protocol",
-            ]
+            ],
         )
 
     def test_clone_azure(self):
@@ -87,7 +91,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
                 "Pragma",
                 "User-Agent",
                 "git-protocol",
-            ]
+            ],
         )
 
     # TODO: Fix this test
@@ -111,7 +115,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
                 "Pragma",
                 "User-Agent",
                 "git-protocol",
-            ]
+            ],
         )
 
     def test_clone_bitbucket(self):
@@ -134,5 +138,5 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
                 "Pragma",
                 "User-Agent",
                 "git-protocol",
-            ]
+            ],
         )
