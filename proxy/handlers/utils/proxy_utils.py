@@ -34,7 +34,8 @@ def copy_request_headers(headers, allowed_list=[]):
 def copy_response_headers(headers):
     copied_headers = {}
     for header_key, header_value in headers.items():
-        copied_headers[header_key] = header_value
+        if header_key.lower() != "Content-Encoding".lower():
+            copied_headers[header_key] = header_value
     return disable_chunking_headers(copied_headers)
 
 
@@ -65,6 +66,9 @@ def copy_header_proxy_for_destination(headers):
     for org_key in headers.keys():
         if org_key not in response_headers:
             log_message("Stripped header: {}".format(org_key))
+
+    if "Accept-Encoding" in response_headers:
+        del response_headers["Accept-Encoding"]
     return response_headers
 
 

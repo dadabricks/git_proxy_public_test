@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler
+from pprint import pprint
 
 from urllib3 import PoolManager
 
@@ -19,6 +20,8 @@ def do_proxy_get(handler: BaseHTTPRequestHandler, pool_manager: PoolManager):
     response = pool_manager.request(
         method="GET", url=handler.destination_url, headers=request_headers
     )
+    # pretty print response
+    pprint(response.headers, sort_dicts=True)
 
     # Proxy to Control Plane
     forward_proxy_response(handler=handler, response=response)
