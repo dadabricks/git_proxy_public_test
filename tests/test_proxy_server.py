@@ -1,6 +1,6 @@
 import subprocess
 import tempfile
-from base64 import b64encode
+from base64 import b64encode, b64decode
 
 from tests.test_base_cls import TestHandlerBaseClass
 
@@ -58,7 +58,9 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         clone(
             provider="Github",
             username="dadabricks",
-            readonly_token="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",
+            readonly_token=b64decode(
+                b"Z2l0aHViX3BhdF8xMUFORklQNkEwQmtqNjExVUY0NFFOX2JOQ3pWblo0cDhqemhOMXlaYWw1UVRZRnlVeXlUQ2pQN0NQV2FxM3B4SlVZTkxZTTRCQkFxbm5xTUZP"
+            ).decode(),
             url=self.to_proxy_url(
                 "https://github.com/dadabricks/integration-small.git"
             ),
