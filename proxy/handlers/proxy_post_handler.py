@@ -23,6 +23,7 @@ def do_proxy_post(handler: BaseHTTPRequestHandler, pool_manager: PoolManager):
         url=handler.destination_url,
         headers=request_headers,
         body=post_body,
+        decode_content=False,
     )
 
     # Proxy to Control Plane
