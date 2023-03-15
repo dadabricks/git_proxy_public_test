@@ -2,6 +2,7 @@
 name = "databricks-repo-proxy"
 version = "0.0.13"
 description = "A proxy for databricks repos"
+readme = "README.md"
 dependencies = []
 
 [project.scripts]
