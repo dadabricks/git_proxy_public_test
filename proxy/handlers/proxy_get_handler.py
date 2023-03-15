@@ -17,7 +17,10 @@ def do_proxy_get(handler: BaseHTTPRequestHandler, pool_manager: PoolManager):
         headers=request_headers,
     )
     response = pool_manager.request(
-        method="GET", url=handler.destination_url, headers=request_headers
+        method="GET",
+        url=handler.destination_url,
+        headers=request_headers,
+        decode_content=False,
     )
 
     # Proxy to Control Plane

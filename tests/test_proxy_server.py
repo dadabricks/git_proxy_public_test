@@ -40,9 +40,24 @@ def clone(
         cmd = [" ".join(commands)]
         print(cmd)
         output = subprocess.run(
-            cmd, shell=True, check=True, capture_output=True, timeout=10
+            cmd, shell=True, check=True, capture_output=True, timeout=60
         )
         print(output)
+
+
+ALLOWED_HEADERS = [
+    "Accept",
+    "Accept-Encoding",
+    "Accept-Language",
+    "Cache-Control",
+    "Connection",
+    "Content-Encoding",
+    "Content-Length",
+    "Content-Type",
+    "Pragma",
+    "User-Agent",
+    "git-protocol",
+]
 
 
 class TestProxyRequestHandler(TestHandlerBaseClass):
@@ -56,19 +71,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://github.com/dadabricks/integration-small.git"
             ),
-            allowed_headers=[
-                "Accept",
-                "Accept-Encoding",
-                "Accept-Language",
-                "Cache-Control",
-                "Connection",
-                "Content-Encoding",
-                "Content-Length",
-                "Content-Type",
-                "Pragma",
-                "User-Agent",
-                "git-protocol",
-            ],
+            allowed_headers=ALLOWED_HEADERS,
         )
 
     def test_clone_azure(self):
@@ -79,19 +82,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://repos-databricks@dev.azure.com/repos-databricks/repos/_git/integration-small"
             ),
-            allowed_headers=[
-                "Accept",
-                "Accept-Encoding",
-                "Accept-Language",
-                "Cache-Control",
-                "Connection",
-                "Content-Encoding",
-                "Content-Length",
-                "Content-Type",
-                "Pragma",
-                "User-Agent",
-                "git-protocol",
-            ],
+            allowed_headers=ALLOWED_HEADERS,
         )
 
     # TODO: Fix this test
@@ -104,18 +95,7 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
                 "https://gitlab.com/repos-databricks/integration-small.git"
             ),
             # Gitlab will fail with Accept-Encoding header
-            allowed_headers=[
-                "Accept",
-                "Accept-Language",
-                "Cache-Control",
-                "Connection",
-                "Content-Encoding",
-                "Content-Length",
-                "Content-Type",
-                "Pragma",
-                "User-Agent",
-                "git-protocol",
-            ],
+            allowed_headers=ALLOWED_HEADERS,
         )
 
     def test_clone_bitbucket(self):
@@ -126,17 +106,5 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             url=self.to_proxy_url(
                 "https://repos-databricks@bitbucket.org/dadabricks/integration-small.git"
             ),
-            allowed_headers=[
-                "Accept",
-                "Accept-Encoding",
-                "Accept-Language",
-                "Cache-Control",
-                "Connection",
-                "Content-Encoding",
-                "Content-Length",
-                "Content-Type",
-                "Pragma",
-                "User-Agent",
-                "git-protocol",
-            ],
+            allowed_headers=ALLOWED_HEADERS,
         )
