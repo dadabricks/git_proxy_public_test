@@ -4,7 +4,7 @@ from distutils.util import strtobool
 
 
 class ProxyConfig:
-    VERSION = "0.0.13"
+    VERSION = "0.0.14"
     PORT = os.environ.get("PROXY_PORT", 8000)
     LOG_FILE_PATH = os.environ.get(
         "LOG_FILE_PATH", tempfile.NamedTemporaryFile(delete=False).name
