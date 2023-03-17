@@ -1,0 +1,14 @@
+version: 3
+
+tasks:
+  build-pipy-package:
+    cmds:
+      - pip3 install -q build --upgrade
+      - python3 -m build
+
+  release:
+    deps:
+      - build-pipy-package
+    cmds:
+      - python3 -m pip install --upgrade twine
+      - python3 -m twine upload --repository testpypi dist/*

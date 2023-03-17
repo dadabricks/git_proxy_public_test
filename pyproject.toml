@@ -1,9 +1,9 @@
 [project]
 name = "databricks-repo-proxy"
-version = "0.0.13"
+dynamic = ["dependencies"]
+version = "0.0.15"
 description = "A proxy for databricks repos"
 readme = "README.md"
-dependencies = []
 
 [project.scripts]
 db_proxy = "proxy.main:main"
@@ -11,3 +11,6 @@ db_proxy = "proxy.main:main"
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
