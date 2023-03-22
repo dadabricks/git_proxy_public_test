@@ -31,7 +31,6 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
             allowed_headers=ALLOWED_HEADERS,
         )
 
-    # TODO: Fix this test
     def test_clone_gitlab(self):
         clone(
             provider="Gitlab",
