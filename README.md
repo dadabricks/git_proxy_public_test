@@ -11,3 +11,7 @@ This Python package repository unblocks Git proxy workflows for some customers. 
 PiPy Test: https://test.pypi.org/project/databricks-repo-proxy/ 
 
 Source: https://github.com/dadabricks/git_proxy_public_test/releases
+
+
+## Troubleshooting
+run `/databricks/python3/bin/db_proxy_doctor`
