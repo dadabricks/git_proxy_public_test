@@ -9,8 +9,8 @@ class ProxyConfig:
     LOG_FILE_PATH = os.environ.get(
         "LOG_FILE_PATH", tempfile.NamedTemporaryFile(delete=False).name
     )
-    ENABLE_SSL_VERIFICATION = strtobool(
+    ENABLE_SSL_VERIFICATION = bool(strtobool(
         os.environ.get("ENABLE_SSL_VERIFICATION", "True")
-    )
-    ENABLE_LOGGING = strtobool(os.environ.get("ENABLE_DB_REPOS_PROXY", "False"))
+    ))
+    ENABLE_LOGGING = bool(strtobool(os.environ.get("ENABLE_DB_REPOS_PROXY", "False")))
     CA_CERT_PATH = os.environ.get("CA_CERT_PATH", "")
