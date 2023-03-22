@@ -1,63 +1,7 @@
-import subprocess
-import tempfile
-from base64 import b64encode, b64decode
+from base64 import b64decode
 
+from proxy.doctor import clone, ALLOWED_HEADERS
 from tests.test_base_cls import TestHandlerBaseClass
-
-
-def build_git_clone_commands(
-    repo_url: str, username: str, token: str, path: str, allowed_headers: list
-):
-    allowed_headers_config = f'''http.extraHeader="x-databricks-allowed-headers:{','.join(allowed_headers)}"'''
-    basic_auth_token = b64encode(bytes(username + ":" + token, "ascii")).decode("ascii")
-    forward_headers_config = f'http.extraHeader=x-databricks-forward-header-Authorization:"Basic {basic_auth_token}"'
-    commands = [
-        "GIT_CURL_VERBOSE=1",
-        "git",
-        "clone",
-        "-c",
-        allowed_headers_config,
-        "-c",
-        forward_headers_config,
-        repo_url,
-        path,
-    ]
-    return commands
-
-
-def clone(
-    provider: str, username: str, readonly_token: str, url: str, allowed_headers: list
-):
-    with tempfile.TemporaryDirectory() as temp_dir:
-        print(f"Testing Provider: {provider}")
-        commands = build_git_clone_commands(
-            repo_url=url,
-            username=username,
-            token=readonly_token,
-            path=temp_dir,
-            allowed_headers=allowed_headers,
-        )
-        cmd = [" ".join(commands)]
-        print(cmd)
-        output = subprocess.run(
-            cmd, shell=True, check=True, capture_output=True, timeout=60
-        )
-        print(output)
-
-
-ALLOWED_HEADERS = [
-    "Accept",
-    "Accept-Encoding",
-    "Accept-Language",
-    "Cache-Control",
-    "Connection",
-    "Content-Encoding",
-    "Content-Length",
-    "Content-Type",
-    "Pragma",
-    "User-Agent",
-    "git-protocol",
-]
 
 
 class TestProxyRequestHandler(TestHandlerBaseClass):
@@ -78,7 +22,9 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         clone(
             provider="Azure",
             username="repos.databricks",
-            readonly_token="7aaegeltki5gngjrxptf2km4yfhdesz5tsnoi6df65cswyrlzoxa",
+            readonly_token=b64decode(
+                b"ejV2bjJlNXZtc2FpbmIzbGg2MzJtbWM0M3o1NW5vczRycnc0Z3U3dzZlN3NqNHZ3dDJjYQ=="
+            ).decode(),
             url=self.to_proxy_url(
                 "https://repos-databricks@dev.azure.com/repos-databricks/repos/_git/integration-small"
             ),
