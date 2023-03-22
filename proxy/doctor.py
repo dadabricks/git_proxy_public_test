@@ -63,7 +63,11 @@ def clone(
 
 
 def _to_proxy_url(repo_url):
-    return f"http://localhost:8000/{repo_url.replace('https://', '')}"
+    proxy_server_url = f"http://localhost:{ProxyConfig.PORT}/"
+    destination_url = repo_url.replace('https://', '')
+    while destination_url.startswith('/'):
+        destination_url = destination_url[1:]
+    return proxy_server_url + "/" + destination_url
 
 
 def test_health_endpoint():
