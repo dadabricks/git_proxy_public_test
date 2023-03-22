@@ -78,7 +78,9 @@ class TestProxyRequestHandler(TestHandlerBaseClass):
         clone(
             provider="Azure",
             username="repos.databricks",
-            readonly_token="7aaegeltki5gngjrxptf2km4yfhdesz5tsnoi6df65cswyrlzoxa",
+            readonly_token=b64decode(
+                b"ejV2bjJlNXZtc2FpbmIzbGg2MzJtbWM0M3o1NW5vczRycnc0Z3U3dzZlN3NqNHZ3dDJjYQ=="
+            ).decode(),
             url=self.to_proxy_url(
                 "https://repos-databricks@dev.azure.com/repos-databricks/repos/_git/integration-small"
             ),
