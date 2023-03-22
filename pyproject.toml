@@ -1,12 +1,13 @@
 [project]
 name = "databricks-repo-proxy"
 dynamic = ["dependencies"]
-version = "0.0.15"
+version = "0.0.16"
 description = "A proxy for databricks repos"
 readme = "README.md"
 
 [project.scripts]
 db_proxy = "proxy.main:main"
+db_proxy_doctor = "proxy.doctor:doctor"
 
 [build-system]
 requires = ["setuptools"]
