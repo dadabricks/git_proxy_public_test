@@ -2,7 +2,7 @@
 # MAGIC %md
 # MAGIC ## Disable the feature
 # MAGIC **Note you must be an admin to update the feature flag**
-# MAGIC 
+# MAGIC
 # MAGIC Running the cell below sets the feature flag to false. You should also terminate the Git proxy cluster manually by going to the "Compute" page.
 
 # COMMAND ----------
@@ -34,5 +34,3 @@ print(
 )
 
 # COMMAND ----------
-
-

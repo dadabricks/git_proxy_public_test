@@ -7,15 +7,15 @@
 # MAGIC %md
 # MAGIC ### Overview
 # MAGIC This private preview feature is available on AWS and Azure.
-# MAGIC 
+# MAGIC
 # MAGIC **Note**: an *admin* must run this notebook to enable the feature.
-# MAGIC 
+# MAGIC
 # MAGIC "Run all" this notebook to set up a cluster that proxies requests to your private Git server. Running this notebook does the following things:
-# MAGIC 
+# MAGIC
 # MAGIC 0. Writes a shell script to DBFS (`dbfs:/databricks/db_repos_proxy/db_repos_proxy_init.sh`) that is used as a [cluster-scoped init script](https://docs.databricks.com/clusters/init-scripts.html#example-cluster-scoped-init-scripts).
 # MAGIC 0. Creates a [single node cluster](https://docs.databricks.com/clusters/single-node.html) named `dp_git_proxy` that runs the init script on start-up. **Important**: all users in the workspace will be granted "attach to" permissions to the cluster.
 # MAGIC 0. Enables a feature flag that controls whether Git requests in Repos are proxied via the cluster.
-# MAGIC 
+# MAGIC
 # MAGIC You may need to wait several minutes after running this notebook for the cluster to reach a "RUNNING" state. It can also take up to 30 minutes for the feature flag configuration to take effect.
 
 # COMMAND ----------
@@ -33,7 +33,7 @@ set -x
 # Install Python
 mkdir /databricks/db_repos_proxy
 /databricks/python3/bin/python -m pip install --upgrade pip
-python3 -m pip install https://github.com/dadabricks/git_proxy_public_test/archive/refs/tags/v0.0.16.zip
+python3 -m pip install https://github.com/dadabricks/git_proxy_public_test/archive/refs/tags/v0.0.18.zip
 
 #--------------------------------------------------
 # Setup Systemd
@@ -117,76 +117,78 @@ print(f"Using cluster name {cluster_name}")
 # COMMAND ----------
 
 create_cluster_data = {
-  "cluster_name": cluster_name,
-  "spark_version": "10.4.x-scala2.12",
-  "num_workers": 0,
-  "autotermination_minutes": 0,
-  "spark_conf": {
-      "spark.databricks.cluster.profile": "singleNode",
-      "spark.master": "local[*]",
-  },
-  "custom_tags": {"ResourceClass": "SingleNode"},
-  "init_scripts": {
-      "dbfs": {"destination": "dbfs:/databricks/db_repos_proxy/db_repos_proxy_init.sh"}
-  },
+    "cluster_name": cluster_name,
+    "spark_version": "12.2.x-scala2.12",
+    "num_workers": 0,
+    "autotermination_minutes": 0,
+    "spark_conf": {
+        "spark.databricks.cluster.profile": "singleNode",
+        "spark.master": "local[*]",
+    },
+    "custom_tags": {"ResourceClass": "SingleNode"},
+    "init_scripts": {
+        "dbfs": {
+            "destination": "dbfs:/databricks/db_repos_proxy/db_repos_proxy_init.sh"
+        }
+    },
 }
 # get list of node types to determine whether this workspace is on AWS or Azure
 clusters_node_types = requests.get(
-  databricks_instance + CLUSTERS_LIST_NODE_TYPES_ENDPOINT, headers=headers
+    databricks_instance + CLUSTERS_LIST_NODE_TYPES_ENDPOINT, headers=headers
 ).json()["node_types"]
 node_type_ids = [type["node_type_id"] for type in clusters_node_types]
 aws_node_type_id = "m5.large"
-azure_node_type_id = "Standard_DS2_v2"
+azure_node_type_id = "Standard_DS3_v2"
 if aws_node_type_id in node_type_ids:
-  create_cluster_data = {
-      **create_cluster_data,
-      "node_type_id": aws_node_type_id,
-      "aws_attributes": {"ebs_volume_count": "1", "ebs_volume_size": "32"},
-  }
+    create_cluster_data = {
+        **create_cluster_data,
+        "node_type_id": aws_node_type_id,
+        "aws_attributes": {"ebs_volume_count": "1", "ebs_volume_size": "32"},
+    }
 elif azure_node_type_id in node_type_ids:
-  create_cluster_data = {**create_cluster_data, "node_type_id": azure_node_type_id}
+    create_cluster_data = {**create_cluster_data, "node_type_id": azure_node_type_id}
 else:
-  raise ValueError(
-      f"Node types {aws_node_type_id} or {azure_node_type_id} do not exist. Make sure you are on AWS or Azure, or contact support."
-  )
+    raise ValueError(
+        f"Node types {aws_node_type_id} or {azure_node_type_id} do not exist. Make sure you are on AWS or Azure, or contact support."
+    )
 
 # Note: this only returns up to 100 terminated all-purpose clusters in the past 30 days
 clusters_list_response = requests.get(
-  databricks_instance + CLUSTERS_LIST_ENDPOINT, headers=headers
+    databricks_instance + CLUSTERS_LIST_ENDPOINT, headers=headers
 ).json()
 clusters_list = clusters_list_response["clusters"]
 clusters_names = [
-  cluster["cluster_name"] for cluster in clusters_list_response["clusters"]
+    cluster["cluster_name"] for cluster in clusters_list_response["clusters"]
 ]
 print(f"List of existing clusters: {clusters_names}")
 
 if cluster_name in clusters_names:
-  raise ValueError(
-      f"Cluster called {cluster_name} already exists. Please delete this cluster and re-run this notebook"
-  )
+    raise ValueError(
+        f"Cluster called {cluster_name} already exists. Please delete this cluster and re-run this notebook"
+    )
 else:
-  # Create a new cluster named cluster_name that will proxy requests to the private Git server
-  print(f"Create cluster POST request data: {create_cluster_data}")
-  clusters_create_response = requests.post(
-      databricks_instance + CLUSTERS_CREATE_ENDPOINT,
-      headers=headers,
-      json=create_cluster_data,
-  ).json()
-  print(f"Create cluster response: {clusters_create_response}")
-  cluster_id = clusters_create_response["cluster_id"]
-  print(f"Created new cluster with id {cluster_id}")
-  update_permissions_data = {
-      "access_control_list": [
-          {"group_name": "users", "permission_level": "CAN_ATTACH_TO"}
-      ]
-  }
-  update_permissions_response = requests.patch(
-      databricks_instance + UPDATE_PERMISSIONS_ENDPOINT + f"/{cluster_id}",
-      headers=headers,
-      json=update_permissions_data,
-  ).json()
-  print(f"Update permissions response: {update_permissions_response}")
-  print(f"Gave all users ATTACH TO permissions to cluster {cluster_id}")
+    # Create a new cluster named cluster_name that will proxy requests to the private Git server
+    print(f"Create cluster POST request data: {create_cluster_data}")
+    clusters_create_response = requests.post(
+        databricks_instance + CLUSTERS_CREATE_ENDPOINT,
+        headers=headers,
+        json=create_cluster_data,
+    ).json()
+    print(f"Create cluster response: {clusters_create_response}")
+    cluster_id = clusters_create_response["cluster_id"]
+    print(f"Created new cluster with id {cluster_id}")
+    update_permissions_data = {
+        "access_control_list": [
+            {"group_name": "users", "permission_level": "CAN_ATTACH_TO"}
+        ]
+    }
+    update_permissions_response = requests.patch(
+        databricks_instance + UPDATE_PERMISSIONS_ENDPOINT + f"/{cluster_id}",
+        headers=headers,
+        json=update_permissions_data,
+    ).json()
+    print(f"Update permissions response: {update_permissions_response}")
+    print(f"Gave all users ATTACH TO permissions to cluster {cluster_id}")
 
 # COMMAND ----------
 
@@ -218,12 +220,12 @@ requests.patch(
 # COMMAND ----------
 
 get_flag_response = requests.get(
-  databricks_instance + WORKSPACE_CONF_ENDPOINT + "?keys=enableGitProxy",
-  headers=headers,
+    databricks_instance + WORKSPACE_CONF_ENDPOINT + "?keys=enableGitProxy",
+    headers=headers,
 ).json()
 get_cluster_name_response = requests.get(
-  databricks_instance + WORKSPACE_CONF_ENDPOINT + "?keys=gitProxyClusterName",
-  headers=headers,
+    databricks_instance + WORKSPACE_CONF_ENDPOINT + "?keys=gitProxyClusterName",
+    headers=headers,
 ).json()
 print(f"Get enableGitProxy response: {get_flag_response}")
 print(f"Get gitProxyClusterName response: {get_cluster_name_response}")
@@ -248,7 +250,7 @@ print(f"Get gitProxyClusterName response: {get_cluster_name_response}")
 
 # COMMAND ----------
 
-# MAGIC %sh 
+# MAGIC %sh
 # MAGIC python --version
 
 # COMMAND ----------
@@ -257,5 +259,3 @@ print(f"Get gitProxyClusterName response: {get_cluster_name_response}")
 # MAGIC curl localhost:8000/databricks/health
 
 # COMMAND ----------
-
-
